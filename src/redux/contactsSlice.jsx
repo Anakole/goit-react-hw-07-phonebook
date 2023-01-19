@@ -1,7 +1,5 @@
-import storage from 'redux-persist/lib/storage';
-import { persistReducer } from 'redux-persist';
+import { createSlice } from '@reduxjs/toolkit';
 import { fetchContacts, addContact, deleteContact } from './operations';
-const { createSlice } = require('@reduxjs/toolkit');
 
 const handlePending = state => {
   state.isLoading = true;
@@ -15,15 +13,13 @@ const handleRejected = (state, action) => {
 const contactsSlice = createSlice({
   name: 'contacts',
   initialState: {
-    contacts: {
-      items: [],
-      isLoading: false,
-      error: null,
-    },
+    items: [],
+    isLoading: false,
+    error: null,
   },
 
   extraReducers: {
-    [fetchContacts.pendind]: handlePending,
+    [fetchContacts.pending]: handlePending,
     [fetchContacts.fulfilled](state, action) {
       state.isLoading = false;
       state.error = null;
@@ -31,7 +27,7 @@ const contactsSlice = createSlice({
     },
     [fetchContacts.rejected]: handleRejected,
 
-    [addContact.pendind]: handlePending,
+    [addContact.pending]: handlePending,
     [addContact.fulfilled](state, action) {
       state.isLoading = false;
       state.error = null;
@@ -39,25 +35,17 @@ const contactsSlice = createSlice({
     },
     [addContact.rejected]: handleRejected,
 
-    [deleteContact.pendind]: handlePending,
+    [deleteContact.pending]: handlePending,
     [deleteContact.fulfilled](state, action) {
       state.isLoading = false;
       state.error = null;
       const index = state.items.findIndex(
         contact => contact.id === action.payload.id
       );
-      state.contacts.splice(index, 1);
+      state.items.splice(index, 1);
     },
     [deleteContact.rejected]: handleRejected,
   },
 });
 
-const persistConfig = {
-  key: 'contacts',
-  storage,
-};
-
-export const contactsReducer = persistReducer(
-  persistConfig,
-  contactsSlice.reducer
-);
+export const contactsReducer = contactsSlice.reducer;
